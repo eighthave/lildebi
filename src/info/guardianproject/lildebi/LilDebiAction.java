@@ -50,7 +50,7 @@ public class LilDebiAction {
 
         command = new String("LANG=" + NativeHelper.getLANG() +
                 " ./start-debian.sh" + NativeHelper.getArgs()
-                + " && " + NativeHelper.app_bin + "/chroot " + NativeHelper.mnt
+                + " && " LD_PRELOAD=''" + " + NativeHelper.app_bin + "/chroot " + NativeHelper.mnt
                 + " /bin/bash -c \"" + NativeHelper.postStartScript + "\"");
         commandThread = new CommandThread();
         commandThread.start();
@@ -62,7 +62,7 @@ public class LilDebiAction {
         if (wl.isHeld())
             wl.release();
 
-        command = new String(NativeHelper.app_bin + "/chroot "
+        command = new String("LD_PRELOAD='' " + NativeHelper.app_bin + "/chroot "
                 + NativeHelper.mnt + " /bin/bash -c \""
                 + NativeHelper.preStopScript + "\"; ./stop-debian.sh "
                 + NativeHelper.getArgs());
