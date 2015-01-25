@@ -70,13 +70,12 @@ export TZ=UTC
 
 .PHONY: all assets clean distclean
 
-all: gnupg $(EXTERNAL_ROOT)/busybox/busybox
+all: $(EXTERNAL_ROOT)/busybox/busybox
 	make -C $(EXTERNAL_ROOT)/cdebootstrap
 
 assets: all
 	install $(EXTERNAL_ROOT)/busybox/busybox \
 		$(EXTERNAL_ROOT)/cdebootstrap/cdebootstrap.tar \
-		$(EXTENAL_ROOT)/gnupg/g10/gpgv \
 		$(ASSETS)/
 
 
@@ -95,16 +94,6 @@ $(EXTERNAL_ROOT)/busybox/busybox: $(EXTERNAL_ROOT)/busybox/.config
 	echo "TIMESTAMP: $(TIMESTAMP)"
 	faketime -f $(TIMESTAMP) make -C $(EXTERNAL_ROOT)/busybox/
 
-# We have to run autogen.sh and configure in GNUPG's git repo.
-gnupg:
-	@if [ -e $(EXTERNAL_ROOT)/gnupg/autogen.sh]; then \
-	-cd $(EXTERNAL_ROOT)/gnupg; \
-	./autogen.sh --force; \
-	./configure --enable-maintainer-mode; \
-        echo "TIMESTAMP: $(TIMESTAMP)"; \
-        faketime -f $(TIMESTAMP) make -C $(EXTERNAL_ROOT)/gnupg/; \
-	fi
-
 # to re-download and verify that the .debs included in git match the official
 # Debian ones
 verify-debian-packages: clean
@@ -120,6 +109,7 @@ clean:
 	make -C $(EXTERNAL_ROOT)/busybox/ clean
 	make -C $(EXTERNAL_ROOT)/cdebootstrap/ clean
 	make -C $(EXTERNAL_ROOT)/debian-archive-keyring/ clean
+	make -C $(EXTERNAL_ROOT)/gnupg/ clean
 
 distclean: clean
 	rm -f -- $(ASSETS)/busybox
