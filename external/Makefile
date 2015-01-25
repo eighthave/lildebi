@@ -55,7 +55,7 @@ STRIP := $(NDK_TOOLCHAIN_BASE)/bin/$(HOST)-strip \
 	--strip-unneeded -R .note -R .comment
 
 # build as small as possible, mostly useful for static binaries
-ALL_CFLAGS = -fdata-sections -ffunction-sections -Os
+ALL_CFLAGS = -fdata-sections -ffunction-sections -Os -static
 ALL_LDFLAGS = -Wl,--gc-sections
 
 # faketime needs to have a very specific timestamp format in order to freeze
@@ -70,12 +70,13 @@ export TZ=UTC
 
 .PHONY: all assets clean distclean
 
-all: $(EXTERNAL_ROOT)/busybox/busybox
+all: gnupg $(EXTERNAL_ROOT)/busybox/busybox
 	make -C $(EXTERNAL_ROOT)/cdebootstrap
 
 assets: all
 	install $(EXTERNAL_ROOT)/busybox/busybox \
 		$(EXTERNAL_ROOT)/cdebootstrap/cdebootstrap.tar \
+		$(EXTENAL_ROOT)/gnupg/g10/gpgv \
 		$(ASSETS)/
 
 
@@ -93,6 +94,16 @@ $(EXTERNAL_ROOT)/busybox/busybox: $(EXTERNAL_ROOT)/busybox/.config
 		patch -N -p1 --reject-file=- < ../003-mount-umount-fsck-df.patch
 	echo "TIMESTAMP: $(TIMESTAMP)"
 	faketime -f $(TIMESTAMP) make -C $(EXTERNAL_ROOT)/busybox/
+
+# We have to run autogen.sh and configure in GNUPG's git repo.
+gnupg:
+	@if [ -e $(EXTERNAL_ROOT)/gnupg/autogen.sh]; then \
+	-cd $(EXTERNAL_ROOT)/gnupg; \
+	./autogen.sh --force; \
+	./configure --enable-maintainer-mode; \
+        echo "TIMESTAMP: $(TIMESTAMP)"; \
+        faketime -f $(TIMESTAMP) make -C $(EXTERNAL_ROOT)/gnupg/; \
+	fi
 
 # to re-download and verify that the .debs included in git match the official
 # Debian ones
@@ -113,3 +124,4 @@ clean:
 distclean: clean
 	rm -f -- $(ASSETS)/busybox
 	rm -f -- $(ASSETS)/cdebootstrap.tar
+	rm -f -- $(ASSETS)/gpgv
