@@ -37,6 +37,7 @@ cd external/gnupg
 CFLAGS="-static" ./configure --host=arm-linux-gnueabi --enable-maintainer-mode
 make
 cp g10/gpgv $projectroot/assets/
+cd $projectroot
 # end **FIXME**
 ./setup-ant
 
