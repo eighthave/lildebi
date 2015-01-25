@@ -2,3 +2,7 @@
 	path = external/busybox
 	url = git://busybox.net/busybox.git
 	ignore = dirty
+[submodule "external/gnupg"]
+	path = external/gnupg
+	url = git://git.gnupg.org/gnupg.git
+	branch = STABLE-BRANCH-1-4
