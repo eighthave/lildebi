@@ -32,6 +32,14 @@ git submodule update --init --recursive
 
 make -C external/ assets
 
+# build gnupg and move **FIXME** (godlessfather stinks at Makefile syntax)
+cd external/gnupg
+./autogen.sh --force
+CFLAGS=ld./configure --host=arm-linux-gnueabi --enable-maintainer-mode
+make
+cp g10/gpgv $projectroot/assets/
+# end **FIXME**
+
 if [ -e ~/.android/ant.properties ]; then
     cp ~/.android/ant.properties $projectroot/
 else
