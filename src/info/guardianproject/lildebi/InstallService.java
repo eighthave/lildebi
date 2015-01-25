@@ -96,7 +96,7 @@ public class InstallService extends Service {
                 command += "\\\n&& " + "./stop-debian.sh " + stdArgs;
                 command += "\\\n&& " + "./unmounted-install-tweaks.sh " + stdArgs;
                 command += "\\\n&& " + "./start-debian.sh " + stdArgs;
-                command += "\\\n&& " + NativeHelper.app_bin + "/chroot " + NativeHelper.mnt
+                command += "\\\n&& " "LD_PRELOAD='' " + NativeHelper.app_bin + "/chroot " + NativeHelper.mnt
                         + " " + NativeHelper.app_bin + "/complete-debian-setup.sh "
                         + stdArgs;
                 writeCommand(os, "cd " + NativeHelper.app_bin.getAbsolutePath());
