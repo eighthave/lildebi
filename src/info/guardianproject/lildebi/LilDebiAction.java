@@ -49,7 +49,7 @@ public class LilDebiAction {
             wl.acquire();
 
         command = new String("LANG=" + NativeHelper.getLANG() +
-                " ./start-debian.sh" + NativeHelper.getArgs()
+                "LD_PRELOAD='' " + "./start-debian.sh" + NativeHelper.getArgs()
                 + " && " + "LD_PRELOAD='' " + NativeHelper.app_bin + "/chroot " + NativeHelper.mnt
                 + " /bin/bash -c \"" + NativeHelper.postStartScript + "\"");
         commandThread = new CommandThread();
@@ -73,13 +73,13 @@ public class LilDebiAction {
     }
 
     public void removeDebianSetup() {
-        command = "./delete-all-debian-setup.sh " + NativeHelper.getArgs();
+        command = "LD_PRELOAD='' " + "./delete-all-debian-setup.sh " + NativeHelper.getArgs();
         commandThread = new CommandThread();
         commandThread.start();
     }
 
     public void configureDownloadedImage() {
-        command = new String("./configure-downloaded-image.sh"
+        command = new String("LD_PRELOAD='' " + "./configure-downloaded-image.sh"
                 + NativeHelper.getArgs());
         commandThread = new CommandThread();
         commandThread.start();
