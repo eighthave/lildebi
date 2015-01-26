@@ -9,6 +9,7 @@ set -x
 # many phones don't even include 'test', so set the path to our
 # busybox tools first, where we provide all the UNIX tools needed by
 # this script
+export LD_PRELOAD=""
 export PATH=$1:$PATH
 
 test -e $1/lildebi-common || exit 1
@@ -175,7 +176,7 @@ $mnt/usr/bin/cdebootstrap-static --verbose --foreign\
 if [ x"$install_on_internal_storage" = xyes ]; then
     mount -o bind /dev $mnt/dev
 fi
-SHELL=/bin/sh chroot $mnt /sbin/cdebootstrap-foreign --second-stage
+LD_PRELOAD="" SHELL=/bin/sh chroot $mnt /sbin/cdebootstrap-foreign --second-stage
 
 # This package sets up all the Android app users and permissions groups.  It
 # needs to be installed as early as possible to claim the uids for group names
@@ -183,7 +184,7 @@ SHELL=/bin/sh chroot $mnt /sbin/cdebootstrap-foreign --second-stage
 # temporary workaround until this package is included in Debian).
 if [ -r $app_bin/android-permissions_0.1_all.deb ]; then
     cp $app_bin/android-permissions_0.1_all.deb $mnt/root/
-    SHELL=/bin/sh chroot $mnt /usr/bin/dpkg -i /root/android-permissions_0.1_all.deb
+    LD_PRELOAD="" SHELL=/bin/sh chroot $mnt /usr/bin/dpkg -i /root/android-permissions_0.1_all.deb
 fi
 
 # figure out extra packages to include
@@ -249,14 +250,14 @@ create_e2fsck_chroot
 # finish tweaking Debian install
 echo "finish tweaking Debian install"
 
-chroot $mnt apt-get -y update
+LD_PRELOAD="" chroot $mnt apt-get -y update
 
 # purge install packages in cache
-chroot $mnt apt-get clean
+LD_PRELOAD="" chroot $mnt apt-get clean
 
 # remove stop scripts
-chroot $mnt /usr/sbin/update-rc.d -f halt remove
-chroot $mnt /usr/sbin/update-rc.d -f hwclock.sh remove
+LD_PRELOAD="" chroot $mnt /usr/sbin/update-rc.d -f halt remove
+LD_PRELOAD="" chroot $mnt /usr/sbin/update-rc.d -f hwclock.sh remove
 chroot $mnt /usr/sbin/update-rc.d -f reboot remove
 chroot $mnt /usr/sbin/update-rc.d -f sendsigs remove
 chroot $mnt /usr/sbin/update-rc.d -f umountfs remove
@@ -268,7 +269,7 @@ chroot $mnt /usr/sbin/update-rc.d -f umountroot remove
 # /proc/mounts via the /etc/mtab symlink.
 if `grep -q -s ext3 /proc/filesystems`; then
     mount -t proc proc $mnt/proc
-    chroot $mnt tune2fs -j `echo $loopdev | sed s,block/,,`
+    LD_PRELOAD="" chroot $mnt tune2fs -j `echo $loopdev | sed s,block/,,`
     umount $mnt/proc
 fi
 
@@ -276,7 +277,7 @@ fi
 #------------------------------------------------------------------------------#
 # clean up after debootstrap
 
-chroot $mnt dpkg --purge cdebootstrap-helper-rc.d
+LD_PRELOAD="" chroot $mnt dpkg --purge cdebootstrap-helper-rc.d
 if [ x"$install_on_internal_storage" = xyes ]; then
     umount $mnt/dev
 fi
