@@ -30,7 +30,6 @@ sed -i \
 
 make -C external/ clean
 make -C external/ assets
-
 ./setup-ant
 
 ./tests/run-tests
