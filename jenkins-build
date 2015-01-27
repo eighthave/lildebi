@@ -31,14 +31,6 @@ sed -i \
 make -C external/ clean
 make -C external/ assets
 
-# build gnupg and move **FIXME** (godlessfather stinks at Makefile syntax)
-cd external/gnupg
-./autogen.sh --force
-CFLAGS="-static" ./configure --host=arm-linux-gnueabi --enable-maintainer-mode
-make
-cp g10/gpgv $projectroot/assets/
-cd $projectroot
-# end **FIXME**
 ./setup-ant
 
 ./tests/run-tests

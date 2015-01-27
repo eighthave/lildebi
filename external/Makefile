@@ -72,10 +72,12 @@ export TZ=UTC
 
 all: $(EXTERNAL_ROOT)/busybox/busybox
 	make -C $(EXTERNAL_ROOT)/cdebootstrap
+	$(MAKE) external/gnupg
 
 assets: all
 	install $(EXTERNAL_ROOT)/busybox/busybox \
 		$(EXTERNAL_ROOT)/cdebootstrap/cdebootstrap.tar \
+		$(EXTERNAL_ROOT)/gnupg/g10/gpgv \
 		$(ASSETS)/
 
 
@@ -94,6 +96,12 @@ $(EXTERNAL_ROOT)/busybox/busybox: $(EXTERNAL_ROOT)/busybox/.config
 	echo "TIMESTAMP: $(TIMESTAMP)"
 	faketime -f $(TIMESTAMP) make -C $(EXTERNAL_ROOT)/busybox/
 
+external/gnupg:
+	cd $(EXTERNAL_ROOT)/gnupg && ./autogen.sh --force
+	cd $(EXTERNAL_ROOT)/gnupg && SYSROOT=$(NDK_SYSROOT) CC="$(CC) --sysroot=$(NDK_SYSROOT) \
+	$(ALL_CFLAGS) -s" ./configure --host=$(HOST) --enable-maintainer-mode --enable-static
+	cd $(EXTERNAL_ROOT)/gnupg; $(MAKE) || true # expected failure in doc build
+
 # to re-download and verify that the .debs included in git match the official
 # Debian ones
 verify-debian-packages: clean
@@ -101,7 +109,7 @@ verify-debian-packages: clean
 	-rm $(EXTERNAL_ROOT)/cdebootstrap/cdebootstrap-static*.deb
 	make -C $(EXTERNAL_ROOT)/cdebootstrap
 
-clean: 
+clean:
 	rm -f -- $(EXTERNAL_ROOT)/busybox/.config
 	rm -f -- $(EXTERNAL_ROOT)/busybox/busybox
 	-cd $(EXTERNAL_ROOT)/busybox/ && \
