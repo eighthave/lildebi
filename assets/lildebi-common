@@ -3,6 +3,7 @@
 
 echo "----------------------------------------"
 
+export LD_PRELOAD=""
 export TERM=linux
 export HOME=/root
 export HOSTNAME=debian
@@ -71,25 +72,25 @@ make_debian_symlink () {
 make_root_symlinks () {
     wd=`pwd`
     cd /
-    mount -oremount,rw rootfs /
+    mount -o remount,rw rootfs /
     for x in \
         bin boot home media opt selinux srv usr var tmp
     do
         ln -s $mnt/$x /$x
     done
-    mount -oremount,ro rootfs /
+    mount -o remount,ro rootfs /
     cd "$wd"
 }
 
 remove_root_symlinks () {
     cd /
-    mount -oremount,rw rootfs /
+    mount -o remount,rw rootfs /
     for x in \
         bin boot home media opt selinux srv usr var tmp
     do
         rm /$x
     done
-    mount -oremount,ro rootfs /
+    mount -o remount,ro rootfs /
 }
 
 find_losetup () {
@@ -208,7 +209,7 @@ find_and_run_fsck () {
         mount -o bind /proc $fsck_chroot/proc
         mount -o bind $imagedir $fsck_chroot/$imagedir
         echo "> $fsck $fsck_flags $install_path"
-        chroot $fsck_chroot /app_bin/`basename $fsck` $fsck_flags $install_path
+        LD_PRELOAD="" chroot $fsck_chroot /app_bin/`basename $fsck` $fsck_flags $install_path
         fsck_return=$?
         umount $fsck_chroot/app_bin
         umount $fsck_chroot/dev
@@ -231,6 +232,6 @@ find_and_run_fsck () {
 install_e2fsck_static () {
         echo "Installing e2fsck.static from Debian..."
         PATH=/sbin:/bin:/usr/bin \
-            chroot $mnt /usr/bin/apt-get --no-install-recommends install e2fsck-static
+            LD_PRELOAD="" chroot $mnt /usr/bin/apt-get --no-install-recommends install e2fsck-static
         cp $mnt/sbin/e2fsck.static $app_bin/
-}
+}Fprel

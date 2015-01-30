@@ -6,6 +6,7 @@
 # many phones don't even include 'test', so set the path to our
 # busybox tools first, where we provide all the UNIX tools needed by
 # this script
+export LD_PRELOAD=""
 export PATH=$1:$PATH
 
 test -e $1/lildebi-common || exit 1
@@ -177,11 +178,11 @@ fi
 # remove rc.d scripts from Debian for things that Android handles
 for script in halt hwclock.sh sendsigs umountfs umountroot; do
     test -e $mnt/etc/rc0.d/*$script && \
-        chroot $mnt /usr/sbin/update-rc.d -f $script remove && \
+        LD_PRELOAD="" chroot $mnt /usr/sbin/update-rc.d -f $script remove && \
         echo "Removed '$script' from /etc/rc?.d/"
 done
 test -e /etc/rc6.d/*reboot && \
-    chroot $mnt /usr/sbin/update-rc.d -f reboot remove && \
+    LD_PRELOAD="" chroot $mnt /usr/sbin/update-rc.d -f reboot remove && \
     echo "Removed 'reboot' from /etc/rc?.d/"
 
 
@@ -193,7 +194,7 @@ keygen=/usr/bin/ssh-keygen
 if [ -x ${mnt}${keygen} ]; then
     echo ""
     echo "My ssh host key fingerprint and random art:"
-    chroot $mnt /bin/bash -c \
+    LD_PRELOAD="" chroot $mnt /bin/bash -c \
         "for key in /etc/ssh/ssh_host_*_key; do $keygen -lv -f \$key; done"
 fi
 
@@ -203,7 +204,7 @@ fi
 if [ -x ${mnt}/usr/sbin/update-locale ]; then
     LANG=`grep ^$LANG $mnt/etc/locale.gen | grep UTF-8 | cut -d ' ' -f 1 | head -1`
     test -z $LANG || \
-        chroot $mnt update-locale "LANG=$LANG"
+        LD_PRELOAD="" chroot $mnt update-locale "LANG=$LANG"
 fi
 
 

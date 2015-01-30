@@ -2,7 +2,7 @@
 #
 # see lildebi-common for arguments, the args are converted to vars there.  The
 # first arg is the "app payload" directory where the included scripts are kept
-
+export LD_PRELOAD=""
 app_bin=$1
 
 echo "----------------------------------------"

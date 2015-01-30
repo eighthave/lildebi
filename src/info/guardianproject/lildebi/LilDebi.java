@@ -130,7 +130,7 @@ public class LilDebi extends Activity implements OnCreateContextMenuListener {
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             i.addCategory(Intent.CATEGORY_DEFAULT);
             i.putExtra("jackpal.androidterm.iInitialCommand", "su -c \"PATH="
-                    + NativeHelper.app_bin + ":$PATH "
+                    + NativeHelper.app_bin + ":$PATH " + "LD_PRELOAD='' "
                     + "chroot /debian /bin/bash -l\"");
 
                 try {

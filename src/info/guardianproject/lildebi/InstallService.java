@@ -92,17 +92,17 @@ public class InstallService extends Service {
                 et.start();
 
                 String stdArgs = NativeHelper.getArgs();
-                String command = "./create-debian-setup.sh " + stdArgs;
-                command += "\\\n&& " + "./stop-debian.sh " + stdArgs;
-                command += "\\\n&& " + "./unmounted-install-tweaks.sh " + stdArgs;
-                command += "\\\n&& " + "./start-debian.sh " + stdArgs;
-                command += "\\\n&& " + NativeHelper.app_bin + "/chroot " + NativeHelper.mnt
+                String command = "LD_PRELOAD='' " + "./create-debian-setup.sh " + stdArgs;
+                command += "\\\n&& " + "LD_PRELOAD='' " + "./stop-debian.sh " + stdArgs;
+                command += "\\\n&& " + "LD_PRELOAD='' " + "./unmounted-install-tweaks.sh " + stdArgs;
+                command += "\\\n&& " + "LD_PRELOAD='' " + "./start-debian.sh " + stdArgs;
+                command += "\\\n&& " + "LD_PRELOAD='' " + NativeHelper.app_bin + "/chroot " + NativeHelper.mnt
                         + " " + NativeHelper.app_bin + "/complete-debian-setup.sh "
                         + stdArgs;
                 writeCommand(os, "cd " + NativeHelper.app_bin.getAbsolutePath());
                 writeCommand(os, command);
                 // Avoid keeping the resource mounted because of some failure
-                writeCommand(os, "./stop-debian.sh " + stdArgs);
+                writeCommand(os, "LD_PRELOAD='' " + "./stop-debian.sh " + stdArgs);
                 writeCommand(os, "exit");
 
                 sh.waitFor();
